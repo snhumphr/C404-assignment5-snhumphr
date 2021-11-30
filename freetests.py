@@ -40,9 +40,9 @@ import json
 
 world = dict()
 # set this to something sane 
-#calls = 3000
+calls = 3000
 # ugh there's too much output? Well drop calls down
-calls = 100
+# calls = 100
 
 def utf8(utf8bytes):
     return utf8bytes.decode("utf-8")
@@ -59,7 +59,7 @@ class WorldClient(WebSocketClient):
         world[entity] = data
         packet = { entity : data }
         self.send(json.dumps(packet))
-        #print("Sent %s" % entity)
+        print("Sent %s" % entity)
 
     def closed(self, code, reason):
         print(("Closed down %s " % self.name, code, reason))
@@ -111,15 +111,10 @@ if __name__ == '__main__':
             gevent.spawn(ws.incoming),
             gevent.spawn(ws.outgoing),
         ]
-        print("1")
         gws2 = gevent.spawn(ws2.incoming)
-        print("2")
         gevent.joinall(greenlets)
-        print("3")
         ws2.close()
-        print("4")
         gws2.join(timeout=1)
-        print("5")
         # here's our final test
         print("Counts: %s %s" % (ws.count , ws2.count))
         assert ws.count == calls, ("Expected Responses were given! %d %d" % (ws.count, calls))
