@@ -260,13 +260,34 @@ function wsSetup() {
     socket.onopen = function() {
         //XXX: TODO What are you going to do here?
         //TODO: GRAB THE WORLD
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if(xhr.readyState == 4){
+                try {
+                    var data = xhr.responseText;
+                    //debug(data);
+                    var jsonData = JSON.parse(data);
+                    world = jsonData;
+                    drawNextFrame();
+                } 
+                catch(e){
+                    alert('Errorr: ' + e.name);
+                }
+            }
+        }
+        
+        awoojson = {}
+        xhr.open("Get","http://"+host+"/world");
+        xhr.setRequestHeader("Accept", "application/json");
+        xhr.send(awoojson);
+
     };
     socket.onerror = function(msg) {
         debug("WebSocket Error:" + msg.data);
     };
     socket.onmessage = function(msg) {  
         try {
-            debug("WebSocket Recv:" + msg.data); 
+            //debug("WebSocket Recv:" + msg.data); 
             var json = JSON.parse(msg.data) 
             //TODO: FOR LOOP THROUGH THE KEYS?
             var entity = Object.keys(json)[0]
