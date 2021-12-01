@@ -6,7 +6,7 @@
     <meta content='width=device-width; height=device-height; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport' />
     <meta name="viewport" content="width=device-width" />
     <meta name="license" content="
-        Copyright 2013 Google, Abram Hindle
+        Copyright 2013 Google, Abram Hindle and 2021 Simon Humphrey
         
         Licensed under the Apache License, Version 2.0 (the "License");
         you may not use this file except in compliance with the License.
@@ -259,27 +259,30 @@ function wsSetup() {
     socket = new WebSocket(url);
     socket.onopen = function() {
         //XXX: TODO What are you going to do here?
-        //TODO: GRAB THE WORLD
+        //Code taken from https://github.com/snhumphr/C404-assignment4-snhumphr
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
             if(xhr.readyState == 4){
                 try {
                     var data = xhr.responseText;
-                    //debug(data);
+                    //debug(data); //Added code
                     var jsonData = JSON.parse(data);
-                    world = jsonData;
-                    drawNextFrame();
+                    world = jsonData; //Added code
+                    drawNextFrame(); //Added code
+		    //Removed callback code here
                 } 
                 catch(e){
                     alert('Errorr: ' + e.name);
                 }
             }
         }
+	
         
-        awoojson = {}
-        xhr.open("Get","http://"+host+"/world");
+        emptyjson = {} //Added code
+        xhr.open("Get","http://"+host+"/world"); //Changed url
         xhr.setRequestHeader("Accept", "application/json");
-        xhr.send(awoojson);
+        xhr.send(emptyjson); //Changed objects sent
+	//End taken code
 
     };
     socket.onerror = function(msg) {

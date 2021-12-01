@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Copyright (c) 2013-2014 Abram Hindle
+# Copyright (c) 2013-2014 Abram Hindle and 2021 Simon Humphrey
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -26,12 +26,14 @@ app = Flask(__name__)
 sockets = Sockets(app)
 app.debug = True
 
+#Code taken from https://github.com/abramhindle/WebSocketsExamples
 clients = list()
 
 def send_all(msg):
     for client in clients:
         client.put( msg )
-
+#end cited code
+        
 class World:
     def __init__(self):
         self.clear()
@@ -76,6 +78,7 @@ def hello():
     '''Return something coherent here.. perhaps redirect to /static/index.html '''
     return flask.redirect("/static/index.html")
 
+#Code taken from https://github.com/abramhindle/WebSocketsExamples
 class Client:
     def __init__(self):
         self.queue = queue.Queue()
@@ -85,11 +88,11 @@ class Client:
 
     def get(self):
         return self.queue.get()
-#TODO: REMEMBER TO CITE
+#End of taken code
 
 def read_ws(ws, client):
     '''A greenlet function that reads from the websocket and updates the world'''
-    count = 0
+    #Code taken from https://github.com/abramhindle/WebSocketsExamples
     try:
         while True:
             msg = ws.receive()
@@ -98,13 +101,14 @@ def read_ws(ws, client):
             if (msg is not None):
                 packet = json.loads(msg)
                 entity = list(packet.keys())[0]
-                for key in packet[entity].keys():
-                    update = myWorld.update(entity, key, packet[entity][key])
-                #ws.send( packet )
+                for key in packet[entity].keys(): #new addition
+                    update = myWorld.update(entity, key, packet[entity][key]) #new addition
+                #ws.send( packet ) #new addition
             else:
                 break
     except Exception as e:
         print("Read_ws error: ", e)
+    #end taken code
     
     return None
 
@@ -112,6 +116,7 @@ def read_ws(ws, client):
 def subscribe_socket(ws):
     '''Fufill the websocket URL of /subscribe, every update notify the
        websocket and read updates from the websocket '''
+    #Code taken from https://github.com/abramhindle/WebSocketsExamples
     client = Client()
     clients.append(client)
     g = gevent.spawn( read_ws, ws, client )    
@@ -129,6 +134,7 @@ def subscribe_socket(ws):
         clients.remove(client)
         gevent.kill(g)  
         print("Done!")
+    #end taken code
 
 
 # I give this to you, this is how you get the raw body/data portion of a post in flask
@@ -146,27 +152,31 @@ def flask_post_json():
 @app.route("/entity/<entity>", methods=['POST','PUT'])
 def update(entity):
     '''update the entities via this interface'''
+    #code taken from https://github.com/snhumphr/C404-assignment4-snhumphr
     json = flask_post_json()
     for key in json.keys():
         myWorld.update(entity, key, json[key])
-    return myWorld.get(entity)    
+    return myWorld.get(entity)
+    #end taken code
 
 @app.route("/world", methods=['POST','GET'])    
 def world():
     '''you should probably return the world here'''
-    return myWorld.world()
+    return myWorld.world() #code taken from https://github.com/snhumphr/C404-assignment4-snhumphr
 
 @app.route("/entity/<entity>")    
 def get_entity(entity):
     '''This is the GET version of the entity interface, return a representation of the entity'''
-    return myWorld.get(entity)
+    return myWorld.get(entity) #code taken from https://github.com/snhumphr/C404-assignment4-snhumphr
 
 
 @app.route("/clear", methods=['POST','GET'])
 def clear():
     '''Clear the world out!'''
+    #code taken from https://github.com/snhumphr/C404-assignment4-snhumphr
     myWorld.clear()
     return myWorld.world()
+    #end taken code
 
 
 
