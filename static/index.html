@@ -287,7 +287,7 @@ function wsSetup() {
     };
     socket.onmessage = function(msg) {  
         try {
-            //debug("WebSocket Recv:" + msg.data); 
+            debug("WebSocket Recv:" + msg.data); 
             var json = JSON.parse(msg.data) 
             //TODO: FOR LOOP THROUGH THE KEYS?
             var entity = Object.keys(json)[0]
